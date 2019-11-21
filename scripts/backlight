@@ -1,6 +1,5 @@
 #!/bin/bash
 
-signalvol=`pkill -RTMIN+10 i3blocks`
 PATHTOLIGHT=`grep "PATH" /usr/local/bin/backlightconfig | awk '{print $2}'`
 numoflevels=`grep "LEVELS" /usr/local/bin/backlightconfig | awk '{print $2}'`
 brightness=`cat ~/.lastbacklight 2>/dev/null`
@@ -28,6 +27,7 @@ bri=$brightness
 function adjustbrightness {
 	echo $1 > $PATHTOLIGHT/brightness
 	cat $PATHTOLIGHT/brightness > ~/.lastbacklight
+	signalvol=`pkill -RTMIN+10 i3blocks`
 	exit 0	
 }
 
@@ -41,10 +41,6 @@ function help {
 	echo "To display help                               $sname -h or $name --help"
 }
 
-function init {
-	cat 
-}
-
 if [ -z $1 ] ; then
 	cat ~/.lastbacklight > $PATHTOLIGHT/brightness
 	echo "Actual brightness:"
@@ -55,6 +51,7 @@ if [ -z $1 ] ; then
 	echo ""
 	echo "Brightness level (manual) (Max=$numofulevels):"
 	echo "$cur_ulevel"
+	signalvol=`pkill -RTMIN+10 i3blocks`
 elif [ "$1" -eq "$1" ] 2>/dev/null ; then
         if [ $1 -gt $numofulevels ] ; then
                 bri=$max

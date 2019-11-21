@@ -10,8 +10,6 @@ function adjustvol {
 	pactl set-sink-volume "$1" $2
 }
 
-signalvol=`pkill -RTMIN+10 i3blocks`
-
 function checkvol {
 	if [ $1 -gt $max ] ; then
 		vol=$max
@@ -142,3 +140,4 @@ else
 	done
 fi
 
+signalvol=`pkill -RTMIN+10 i3blocks`
