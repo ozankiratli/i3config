@@ -1,22 +1,29 @@
 #!/usr/bin/env sh
 
-capacity=$(cat /sys/class/power_supply/BAT0/capacity) || exit
-status=$(cat /sys/class/power_supply/BAT0/status)
-
 battery=`acpi`
+batinfo=`echo "${battery#*: }"`
 
-hour=`echo $battery | awk '{print $5}' | sed 's/\:/ /g' | awk '{print $1}' | sed 's/^0*//'`
-min=`echo $battery | awk '{print $5}' | sed 's/\:/ /g' | awk '{print $2}' | sed 's/^0*//'`
+capacity=`echo $batinfo | awk '{print $2}' | sed 's/\,//' | sed 's/\%//'`
+status=`echo $batinfo | awk '{print $1}' | sed 's/\,//'`
+status=`echo "$status" | awk '{print tolower($0)}'`
+hour=`echo $batinfo | awk '{print $3}' | sed 's/\:/ /g' | awk '{print $1}' | sed 's/^0*//'`
+min=`echo $batinfo | awk '{print $3}' | sed 's/\:/ /g' | awk '{print $2}' | sed 's/^0*//'`
 
 if [ -z $hour ] ; then
 	shour=""
+	if [ -z $min ] ; then
+		smin=""
+	else
+		smin=$min"m"
+	fi
 else
-	shour=$hour"h "
-fi
-if [ -z $min ] ; then
-	smin=""
-else
-	smin=$min"m"
+	shour=$hour"h"
+	if [ -z $min ] ; then
+		smin=""
+	else
+		shour="$shour "
+		smin=$min"m"
+	fi
 fi
 
 remaining=" ($shour$smin)"
@@ -44,28 +51,32 @@ fi
 
 [ -z $warn ] && warn=" "
 
-[ "$status" = "Charging" ] && color=$white
-
-[ "$status" = "Full" ] && remaining=""
-
-cond="$(echo "$status" | sed -e "s/,//;s/Discharging/🔋/;s/Not Charging//;s/Charging//;s/Unknown//;s/Full//;s/ 0*/ /g;s/ :/ /g")"
-
-if [ $cond = "🔋" ] ; then
-	if [ $capacity -ge 85 ] ; then
-		cond=""
-	elif [ $capacity -ge 60 ] ; then
-                cond=""
-	elif [ $capacity -ge 40 ] ; then
-                cond=""
-	elif [ $capacity -ge 15 ] ; then
-                cond=""
-	elif  [ $capacity -ge 0 ] ; then
-                cond=""
-	else
-		cond="❗"
-	fi
+[ "$status" = "charging" ] && color=$white
+if [ "$status" = "full" ] || [ "$status" = "unknown" ] || [ -z $status ] || [ $capacity -ne $capacity ] ;then
+        remaining=""
 fi
 
+case $status in
+	charging) cond="" ;;
+	"not charging") cond="" ;;
+	full) cond="" ;;
+	unknown) cond="" ;;
+	discharging) 
+		if [ $capacity -ge 85 ] ; then
+                	cond=""
+        	elif [ $capacity -ge 60 ] ; then
+                	cond=""
+        	elif [ $capacity -ge 40 ] ; then
+                	cond=""
+        	elif [ $capacity -ge 15 ] ; then
+                	cond=""
+        	elif  [ $capacity -ge 0 ] ; then
+                	cond=""
+        	else
+                	cond="❗Unknown capacity, check acpi"
+        	fi
+		;;
+	*) cond="❗Unidentified battery status, check acpi" ;;
+esac
 
 echo "$cond <span color=\"${color}\">${capacity}%</span>${remaining}"
-
