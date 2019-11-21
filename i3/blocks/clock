@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+date '+%a, %Y/%m/%d %H:%M:%S'
+
+case $BLOCK_BUTTON in
+	1) exec gnome-calendar ;;
+	2) exec gnome-calendar ;;
+	3) exec gnome-calendar ;;
+esac

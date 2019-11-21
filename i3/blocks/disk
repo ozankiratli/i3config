@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+white="#FFFFFF"
+green="#00BB00"
+orange="#FF7722"
+red="#bb0000"
+yellow="#FDDC00"
+
+colorc=$white
+
+disk=`df -h / | awk '/[0-9]/ {print $4}'`
+diskn=`df -h / | awk ' /[0-9]/ {print $4}' | sed 's/[a-zA-Z]//'`
+
+
+if [ $diskn -lt 150 ] ; then
+        colorc=$yellow
+elif [ $diskn -lt 100 ] ; then
+        colorc=$red
+else
+        colorc=$green
+fi
+
+echo "|<span color=\"${colorc}\">${disk}</span>"
+
+case $BLOCK_BUTTON in
+	1) exec nautilus ;;
+esac
+

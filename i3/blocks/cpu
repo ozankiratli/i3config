@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+white="#FFFFFF"
+green="#00BB00"	
+orange="#FF7722"	
+red="#BB0000"	
+yellow="#FDDC00"	
+
+colort=$white
+colorc=$white
+
+free=`mpstat | grep 'all' | awk '{print $NF}' | sed 's/\.//'`
+used=`printf %.2f "$(( 10000 - $free  ))e-2"`
+
+temp=`sensors | awk '/Core 0/ {print $3}'`
+
+freq=`cpufreq-info | grep "CPU 0" -A 10 | grep "current CPU frequency" | awk '{print $(NF-1) $NF}' | sed 's/ //' | sed 's/z\./z/'`
+
+
+if [ $free -lt 2500 ] ; then
+	colorc=$yellow
+elif [ $free -lt 1000 ] ; then
+	colorc=$red
+else
+	colorc=$green
+fi
+
+
+if [ $temp -gt 70 ] ; then
+	colort=$yellow
+elif [ $temp -gt 90 ] ; then
+	colort=$red
+else
+	colort=$green
+fi
+
+
+echo "|${freq}|<span color=\"${colorc}\">${used}%</span>|<span color=\"${colort}\">${temp}</span>"

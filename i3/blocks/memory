@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+white="#FFFFFF"
+green="#00BB00"	
+orange="#FF7722"	
+red="#bb0000"	
+yellow="#FDDC00"
+
+colorc=$white
+
+mem=`free -h | awk '/^Mem:/ {print $3}'`
+
+if [ $mem -gt 16 ] ; then
+	colorc=$yellow
+elif [ $free -lt 28 ] ; then
+	colorc=$red
+else
+	colorc=$green
+fi
+
+echo "|<span color=\"${colorc}\">${mem}</span>"

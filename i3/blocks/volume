@@ -1,0 +1,121 @@
+#!/bin/bash
+
+
+sinkflag=0
+step=`grep "STEP" /usr/local/bin/volumeconfig | awk '{print $2}'`
+max=`grep "MAX" /usr/local/bin/volumeconfig | awk '{print $2}'`
+sname=`basename $0`
+default_sink="@DEFAULT_SINK@"
+
+color="#FFFFFF"
+hicolor="#00BBFF"
+mdcolor="#00BB00"
+locolor="#BB0000"
+
+
+function adjustvol {
+	pactl set-sink-volume "$1" $2
+}
+
+function checkvol {
+	if [ $1 -gt $max ] ; then
+		vol=$max
+	elif [ $1 -lt 0 ] ; then
+		vol=0
+	else
+		vol=$1
+	fi
+	delim="$vol%"
+}
+
+function getcurrent {
+	current=`pactl list | grep RUNNING -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Sink\|Volume' | sed  -n -E 's/(^|.*[^0-9])([0-9]{1,3})%.*/\2/p'`
+	if [ -z $current ] ; then
+		current=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Sink\|Volume' | sed  -n -E 's/(^|.*[^0-9])([0-9]{1,3})%.*/\2/p'`
+	fi
+	mute=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Mute:' | awk '{print $2}'`
+
+}
+
+function getsinks {
+	sinks=`pactl list | grep RUNNING -B 1 | grep -oP 'Sink #\K([0-9]+)'`
+	if [ -z $sinks ] ; then
+		sinks=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 | grep -oP 'Sink #\K([0-9]+)'`
+	fi
+	numsinks=`echo $sinks | wc -w`
+}
+
+
+nsteps=$(( $max/$step  ))
+
+hihex=`echo $hicolor | sed 's/^.//'`
+hihexR=${hihex:0:2}
+hihexG=${hihex:2:2}
+hihexB=${hihex:4:2}
+mdhex=`echo $mdcolor | sed 's/^.//'`
+mdhexR=${mdhex:0:2}
+mdhexG=${mdhex:2:2}
+mdhexB=${mdhex:4:2}
+lohex=`echo $locolor | sed 's/^.//'`
+lohexR=${lohex:0:2}
+lohexG=${lohex:2:2}
+lohexB=${lohex:4:2}
+
+hidecR=`echo "obase=10; ibase=16; $hihexR" | bc`
+hidecG=`echo "obase=10; ibase=16; $hihexG" | bc`
+hidecB=`echo "obase=10; ibase=16; $hihexB" | bc`
+mddecR=`echo "obase=10; ibase=16; $mdhexR" | bc`
+mddecG=`echo "obase=10; ibase=16; $mdhexG" | bc`
+mddecB=`echo "obase=10; ibase=16; $mdhexB" | bc`
+lodecR=`echo "obase=10; ibase=16; $lohexR" | bc`
+lodecG=`echo "obase=10; ibase=16; $lohexG" | bc`
+lodecB=`echo "obase=10; ibase=16; $lohexB" | bc`
+
+
+difR1=$(( $hidecR-$mddecR ))
+difG1=$(( $hidecG-$mddecG ))
+difB1=$(( $hidecB-$mddecB ))
+difR2=$(( $mddecR-$lodecR ))
+difG2=$(( $mddecG-$lodecG ))
+difB2=$(( $mddecB-$lodecB ))
+
+
+getsinks
+getcurrent $sink
+
+if [ $current -le 50 ] ; then
+	coldecR=$(( (100*$lodecR+$current*2*$difR2)/100  ))
+	colhexR=`echo "obase=16; ibase=10; $coldecR" | bc`
+	colR=`printf "%02x" 0x$colhexR`
+	coldecG=$(( (100*$lodecG+$current*2*$difG2)/100  ))
+	colhexG=`echo "obase=16; ibase=10; $coldecG" | bc`
+	colG=`printf "%02x" 0x$colhexG`
+	coldecB=$(( (100*$lodecB+$current*2*$difB2)/100  ))
+	colhexB=`echo "obase=16; ibase=10; $coldecB" | bc`
+	colB=`printf "%02x" 0x$colhexB`
+elif [ $current -gt 50 ] ; then
+	coldecR=$(( (100*$mddecR+($current-50)*2*$difR1)/100  ))
+	colhexR=`echo "obase=16; ibase=10; $coldecR" | bc`
+	colR=`printf "%02x" 0x$colhexR`
+	coldecG=$(( (100*$mddecG+($current-50)*2*$difG1)/100  ))
+	colhexG=`echo "obase=16; ibase=10; $coldecG" | bc`
+	colG=`printf "%2x" 0x$colhexG`
+	coldecB=$(( (100*$mddecB+($current-50)*2*$difB1)/100  ))
+	colhexB=`echo "obase=16; ibase=10; $coldecB" | bc`
+	colB=`printf "%02x" 0x$colhexB`
+fi
+color="#"$colR$colG$colB
+
+if [ $mute = "yes" ] ; then
+	current="♪ $current"
+	color=$locolor
+	echo "<span color=\"${color}\">${current}</span>"
+fi	       
+
+echo "♪ <span color=\"${color}\">${current}</span>"
+
+case $BLOCK_BUTTON in
+	1) setsid pavucontrol & break ;;
+	2) setsid pavucontrol & break ;;
+	3) volume mute & break ;;
+esac 

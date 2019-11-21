@@ -1,0 +1,48 @@
+#!/bin/bash
+
+PATHTOLIGHT=`grep "PATH" /usr/local/bin/backlightconfig | awk '{print $2}'`
+numoflevels=`grep "LEVELS" /usr/local/bin/backlightconfig | awk '{print $2}'`
+brightness=`cat $PATHTOLIGHT/brightness`
+max=`cat $PATHTOLIGHT/max_brightness`
+
+sname=`basename $0`
+
+#Comment this out to use the global setting
+numofulevels=100
+#numofulevels=$numoflevels
+
+incrsize=$(( $max/$numoflevels ))
+incrusize=$(( $max/$numofulevels ))
+
+cur_level=$(( $brightness/$incrsize ))
+cur_ulevel=$(( $brightness/$incrusize ))
+
+
+color9="#FFFFFF"
+color8="#EEEEEE"
+color7="#DDDDDD"
+color6="#CCCCCC"
+color5="#BBBBBB"
+color4="#AAAAAA"
+color3="#999999"
+color2="#888888"
+color1="#777777"
+color0="#666666"
+
+brilev=$(( $cur_ulevel/10 ))
+case $brilev in
+	0) color=$color0 ;;
+	1) color=$color1 ;;
+	2) color=$color2 ;;
+	3) color=$color3 ;;
+	4) color=$color4 ;;
+	5) color=$color5 ;;
+	6) color=$color6 ;;
+	7) color=$color7 ;;
+	8) color=$color8 ;;
+	9) color=$color9 ;;
+	*) color=$color9 ;;
+esac
+bri=$brightness
+echo "<span color=\"$color\">|$cur_ulevel%</span>"
+#echo "<span color=\"$color\"></span>|<span color=\"$color\">$cur_ulevel%</span>"
