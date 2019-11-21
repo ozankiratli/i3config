@@ -46,10 +46,7 @@ elif [ $capacity -ge 10 ]; then
 	color=$orange
 else
 	color=$red
-	warn=""
 fi
-
-[ -z $warn ] && warn=" "
 
 [ "$status" = "charging" ] && color=$white
 if [ "$status" = "full" ] || [ "$status" = "unknown" ] || [ -z $status ] || [ $capacity -ne $capacity ] ;then
