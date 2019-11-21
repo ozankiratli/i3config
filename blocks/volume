@@ -30,10 +30,11 @@ function checkvol {
 
 function getcurrent {
 	current=`pactl list | grep RUNNING -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Sink\|Volume' | sed  -n -E 's/(^|.*[^0-9])([0-9]{1,3})%.*/\2/p'`
+	mute=`pactl list | grep RUNNING -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Mute:' | awk '{print $2}'`
 	if [ -z $current ] ; then
 		current=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Sink\|Volume' | sed  -n -E 's/(^|.*[^0-9])([0-9]{1,3})%.*/\2/p'`
+		mute=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Mute:' | awk '{print $2}'`
 	fi
-	mute=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Mute:' | awk '{print $2}'`
 
 }
 
@@ -44,7 +45,6 @@ function getsinks {
 	fi
 	numsinks=`echo $sinks | wc -w`
 }
-
 
 nsteps=$(( $max/$step  ))
 
@@ -82,6 +82,8 @@ difB2=$(( $mddecB-$lodecB ))
 
 getsinks
 getcurrent $sink
+current=`echo $current | awk '{print $1}'`
+mute=`echo $mute | awk '{print $1}'`
 
 if [ $current -le 50 ] ; then
 	coldecR=$(( (100*$lodecR+$current*2*$difR2)/100  ))
@@ -119,3 +121,4 @@ case $BLOCK_BUTTON in
 	2) setsid pavucontrol & break ;;
 	3) volume mute & break ;;
 esac 
+
