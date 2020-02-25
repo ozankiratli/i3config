@@ -1,22 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-PATHTOLIGHT=`grep "PATH" /usr/local/bin/backlightconfig | awk '{print $2}'`
-numoflevels=`grep "LEVELS" /usr/local/bin/backlightconfig | awk '{print $2}'`
+PATHTOLIGHT=/sys/class/backlight/intel_backlight
 brightness=`cat $PATHTOLIGHT/brightness`
 max=`cat $PATHTOLIGHT/max_brightness`
 
-sname=`basename $0`
-
-#Comment this out to use the global setting
 numofulevels=100
-#numofulevels=$numoflevels
-
-incrsize=$(( $max/$numoflevels ))
 incrusize=$(( $max/$numofulevels ))
-
-cur_level=$(( $brightness/$incrsize ))
 cur_ulevel=$(( $brightness/$incrusize ))
-
 
 color9="#FFFFFF"
 color8="#EEEEEE"
@@ -45,4 +35,3 @@ case $brilev in
 esac
 bri=$brightness
 echo "<span color=\"$color\">|$cur_ulevel%</span>"
-#echo "<span color=\"$color\"></span>|<span color=\"$color\">$cur_ulevel%</span>"
