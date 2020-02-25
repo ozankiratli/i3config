@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 sinkflag=0
 step=`grep "STEP" /usr/local/bin/volumeconfig | awk '{print $2}'`
 max=`grep "MAX" /usr/local/bin/volumeconfig | awk '{print $2}'`
@@ -11,7 +10,6 @@ color="#FFFFFF"
 hicolor="#00BBFF"
 mdcolor="#00BB00"
 locolor="#BB0000"
-
 
 function adjustvol {
 	pactl set-sink-volume "$1" $2
@@ -71,14 +69,12 @@ lodecR=`echo "obase=10; ibase=16; $lohexR" | bc`
 lodecG=`echo "obase=10; ibase=16; $lohexG" | bc`
 lodecB=`echo "obase=10; ibase=16; $lohexB" | bc`
 
-
 difR1=$(( $hidecR-$mddecR ))
 difG1=$(( $hidecG-$mddecG ))
 difB1=$(( $hidecB-$mddecB ))
 difR2=$(( $mddecR-$lodecR ))
 difG2=$(( $mddecG-$lodecG ))
 difB2=$(( $mddecB-$lodecB ))
-
 
 getsinks
 getcurrent $sink
