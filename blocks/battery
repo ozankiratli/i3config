@@ -27,6 +27,9 @@ else
 fi
 
 remaining=" ($shour$smin)"
+if [ $remaining = "(rateh)" ] ; then
+  remaining=""
+fi
 
 white="#FFFFFF"
 green="#00BB00"	
