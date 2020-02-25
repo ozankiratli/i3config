@@ -2,8 +2,9 @@
 
 date '+%a, %Y/%m/%d %H:%M:%S'
 
+
 case $BLOCK_BUTTON in
-	1) exec gnome-calendar ;;
-	2) exec gnome-calendar ;;
-	3) exec gnome-calendar ;;
+	1) setsid break & gnome-calendar & break ;;
+	2) setsid break & gnome-calendar & break ;;
+	3) setsid break & gnome-calendar & break ;;
 esac
