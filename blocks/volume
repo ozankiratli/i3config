@@ -114,7 +114,11 @@ echo "♪ <span color=\"${color}\">${current}</span>"
 
 case $BLOCK_BUTTON in
 	1) setsid pavucontrol & break ;;
-	2) setsid pavucontrol & break ;;
+	2) volume switchsink & break ;;
 	3) volume mute & break ;;
+	4) volume u & break ;;
+	5) volume d & break ;;
+	8) volume switchsink & break ;;
+	9) volume switchsink & break ;;
 esac 
 
