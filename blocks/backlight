@@ -35,3 +35,10 @@ case $brilev in
 esac
 bri=$brightness
 echo "<span color=\"$color\">|$cur_ulevel%</span>"
+
+case $BLOCK_BUTTON in
+	4) backlight u & break ;;
+	5) backlight d & break ;;
+	8) backlight u & break ;;
+	9) backlight d & break ;;
+esac 
