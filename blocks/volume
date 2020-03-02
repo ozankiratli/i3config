@@ -1,8 +1,6 @@
 #!/bin/bash
 
 sinkflag=0
-step=`grep "STEP" /usr/local/bin/volumeconfig | awk '{print $2}'`
-max=`grep "MAX" /usr/local/bin/volumeconfig | awk '{print $2}'`
 sname=`basename $0`
 default_sink="@DEFAULT_SINK@"
 
@@ -11,21 +9,6 @@ hicolor="#00BBFF"
 mdcolor="#00BB00"
 locolor="#BB0000"
 
-function adjustvol {
-	pactl set-sink-volume "$1" $2
-}
-
-function checkvol {
-	if [ $1 -gt $max ] ; then
-		vol=$max
-	elif [ $1 -lt 0 ] ; then
-		vol=0
-	else
-		vol=$1
-	fi
-	delim="$vol%"
-}
-
 function getcurrent {
 	current=`pactl list | grep RUNNING -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Sink\|Volume' | sed  -n -E 's/(^|.*[^0-9])([0-9]{1,3})%.*/\2/p'`
 	mute=`pactl list | grep RUNNING -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Mute:' | awk '{print $2}'`
@@ -33,7 +16,6 @@ function getcurrent {
 		current=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Sink\|Volume' | sed  -n -E 's/(^|.*[^0-9])([0-9]{1,3})%.*/\2/p'`
 		mute=`pactl list | grep 'RUNNING\|SUSPENDED\|IDLE' -B 1 -A 10 | grep "Sink #$1" -A 10 | grep 'Mute:' | awk '{print $2}'`
 	fi
-
 }
 
 function getsinks {
@@ -43,8 +25,6 @@ function getsinks {
 	fi
 	numsinks=`echo $sinks | wc -w`
 }
-
-nsteps=$(( $max/$step  ))
 
 hihex=`echo $hicolor | sed 's/^.//'`
 hihexR=${hihex:0:2}
