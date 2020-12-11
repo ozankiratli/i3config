@@ -88,17 +88,17 @@ if [ $mute = "yes" ] ; then
 	current="♪ $current"
 	color=$locolor
 	echo "<span color=\"${color}\">${current}</span>"
-fi	       
-
-echo "♪ <span color=\"${color}\">${current}</span>"
+else
+	echo "♪ <span color=\"${color}\">${current}</span>"
+fi
 
 case $BLOCK_BUTTON in
-	1) setsid pavucontrol & break ;;
-	2) volume switchsink & break ;;
-	3) volume mute & break ;;
-	4) volume u & break ;;
-	5) volume d & break ;;
-	8) volume switchsink & break ;;
-	9) volume switchsink & break ;;
+	1) setsid pavucontrol & disown ;;
+	2) volume switchsink & disown ;;
+	3) volume mute & disown ;;
+	4) volume u & disown ;;
+	5) volume d & disown ;;
+	8) volume switchsink & disown ;;
+	9) volume switchsink & disown ;;
 esac 
 

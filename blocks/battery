@@ -1,13 +1,20 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-battery=`acpi`
-batinfo=`echo "${battery#*: }"`
+battery="acpi -i"
+no=`$battery | grep capacity | awk '{for(i=1;i<=NF;i++)if($i=="Battery")print $(i+1)}' | sed 's/://'`
+batinfo=`$battery | grep "Battery $no" | grep -v capacity`
 
-capacity=`echo $batinfo | awk '{print $2}' | sed 's/\,//' | sed 's/\%//'`
-status=`echo $batinfo | awk '{print $1}' | sed 's/\,//'`
+batinfo=`echo ${batinfo#*: }`
+status=`echo $batinfo | cut -f1 -d","`
 status=`echo "$status" | awk '{print tolower($0)}'`
-hour=`echo $batinfo | awk '{print $3}' | sed 's/\:/ /g' | awk '{print $1}' | sed 's/^0*//'`
-min=`echo $batinfo | awk '{print $3}' | sed 's/\:/ /g' | awk '{print $2}' | sed 's/^0*//'`
+
+batinfo=`echo ${batinfo#*, }`
+capacity=`echo $batinfo | cut -f1 -d"," | sed 's/\%//'`
+
+
+batinfo=`echo ${batinfo#*, }`
+hour=`echo $batinfo | awk '{print $1}' | sed 's/\:/ /g' | awk '{print $1}' | sed 's/^0*//'`
+min=`echo $batinfo | awk '{print $1}' | sed 's/\:/ /g' | awk '{print $2}' | sed 's/^0*//'`
 
 if [ -z $hour ] ; then
 	shour=""
