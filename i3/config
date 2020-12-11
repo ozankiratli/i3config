@@ -5,7 +5,7 @@
 #GENERAL
 set $mod Mod4
 font pango: Acme, FontAwesome 5 Brands Regular, FontAwesome, FontAwesome 5 Free Solid 10
-
+default_border pixel 1
 #KEYBINDINGS
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -68,6 +68,18 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 bindsym $mod+z focus child
 
+# focus different monitors
+bindsym $mod+bracketright focus output right
+bindsym $mod+bracketleft focus output left
+bindsym $mod+equal focus output up
+bindsym $mod+apostrophe focus output down
+
+# move containers to other monitors 
+bindsym $mod+Shift+bracketright move workspace to output right
+bindsym $mod+Shift+bracketleft move workspace to output left
+bindsym $mod+Shift+equal move workspace to output up
+bindsym $mod+Shift+apostrophe move workspace to output down
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -76,6 +88,10 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 #lock
 bindsym $mod+shift+x exec i3lock -n  -c 001111 -i ~/Pictures/Wallpapers/lock2.png -t
+#suspend
+bindsym $mod+shift+s exec suspendpc
+#lock & suspend
+bindsym $mod+shift+z exec i3lock -n -c 001111 -t & suspendpc
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -108,7 +124,7 @@ bindsym $mod+7 workspace $workspace7
 bindsym $mod+8 workspace $workspace8
 bindsym $mod+9 workspace $workspace9
 bindsym $mod+0 workspace $workspace10
-bindsym $mod+equal exec ~/.i3/new_workspace.sh
+bindsym $mod+minus exec ~/.config/i3/scripts/new_workspace.sh
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace $workspace1
@@ -126,7 +142,7 @@ bindsym $mod+Shift+0 move container to workspace $workspace10
 #Shortcut keys
 #Volume
 #My script
-bindsym XF86AudioRaiseVolume exec --no-startup-id volume u
+bindsym XF86AudioRaiseVolume exec --no-startup-id volume u 
 bindsym XF86AudioLowerVolume exec --no-startup-id volume d
 bindsym XF86AudioMute exec --no-startup-id volume mute
 bindsym Shift+XF86AudioMute exec --no-startup-id pavucontrol
@@ -148,7 +164,10 @@ bindsym XF86AudioPrev exec playerctl previous
 
 #Backlight
 bindsym XF86MonBrightnessUp exec backlight u # increase screen backlight
+bindsym XF86Calculator exec backlight u
 bindsym XF86MonBrightnessDown exec backlight d # decrease screen backlight
+bindsym XF86HomePage exec backlight d
+
 #Brightness
 bindsym Shift+XF86MonBrightnessUp exec brightness -u # increase screen brightness
 bindsym Shift+XF86MonBrightnessDown exec brightness -d # decrease screen brightness
@@ -160,31 +179,44 @@ bindsym Print exec gnome-screenshot
 bindsym Shift+Print exec "sleep 0.2; gnome-screenshot -a"
 bindsym Control+Print exec gnome-screenshot -w
 
+
+#Monitor settings
+bindsym $mod+comma 		exec monset home
+bindsym $mod+Shift+comma 	exec monset homev
+bindsym $mod+Control+comma	exec monset home2
+bindsym $mod+Control+Shift+comma	exec monset home2v
+bindsym $mod+period 		exec monset office
+bindsym $mod+Shift+period 	exec monset officev
+bindsym $mod+slash 		exec monset
+
+
 # COLORS AND THEME SETTINGS
 # Color Definitions
-# Deep dark night blue
-set $bg-color			#001D29
-# Darker deep night blue
-set $bg-color2			#001219
-# Navy
-set $inactive-bg-color		#263E58
-# Orange
-set $text-color			#F57900
-# Blueish Gray
-set $inactive-text-color	#676E7D
-# Dark Red
-set $warning-bg-color		#751919
-# Dark Aqua
-set $urgent-bg-color		#199DB9
-# Teal
-set $indicator-color		#00AAAA
+set $black 			#000000
+set $deepnightblue		#001D29
+set $darknightblue		#001219
+set $navy			#263E58
+set $orange			#F57900
+set $bright-orange 		#FB781F
+set $dark-orange		#C24600
+set $blue-gray			#748fa3
+set $darkred			#751919
+set $darkaqua			#199DB9
+set $teal			#00AAAA
+set $gray			#595959
+set $dark-gray			#292929
+set $white			#FFFFFF
+ 
 
 # window colors
-#			border			background		text			indicator
-client.focused		$bg-color2		$bg-color2		$text-color		$indicator-color
-client.unfocused	$inactive-bg-color	$inactive-bg-color	$inactive-text-color	$indicator-color
-client.focused_inactive	$inactive-bg-color	$inactive-bg-color	$inactive-text-color	$indicator-color
-client.urgent		$urgent-bg-color	$urgent-bg-color	$text-color		$indicator-color
+#			border		background	text		indicator	child_border
+client.focused		$blue-gray	$darknightblue	$orange		$teal		$gray
+client.unfocused	$blue-gray	$navy		$blue-gray	$teal		$dark-gray
+client.focused_inactive	$blue-gray	$darknightblue	$white		$teal		$dark-gray
+client.urgent		$darkred	$darkaqua	$orange		$teal		$bright-orange
+client.placeholder      $blue-gray	$darknightblue	$orange		$teal		$dark-gray
+
+client.background       $darknightblue
 
 #WORKSPACES
 #Terminal
@@ -210,20 +242,31 @@ set $workspace10 "10: "
 
 # use `xprop` to get class
 assign [class="X-terminal-emulator"] $workspace1
+
 assign [class="Firefox"] $workspace2
+
 assign [class="Mailspring"] $workspace3
 assign [class="tutanota-desktop"] $workspace3
-assign [class="Evolution"] $workspace3
 assign [class="Gnome-calendar"] $workspace3
+
 assign [class="Nautilus"] $workspace4
+
 assign [class="Mendeley Desktop"] $workspace5
 assign [class="Zotero"] $workspace5
+
 assign [class="RStudio"] $workspace7
+
 assign [class="Riot"] $workspace9
 assign [class="Signal"] $workspace9
+assign [class="Slack"] $workspace9
+assign [class="Skype"] $workspace9
+assign [class="zoom"] $workspace9
 
 assign [class="libreoffice-writer"] $workspace6
-assign [class="Spotify"] $workspace10
+assign [class="vlc"] $workspace10
+
+for_window [class="Spotify"] move to workspace $workspace10
+
 
 #BAR
 bar {
@@ -233,14 +276,14 @@ bar {
 	tray_output primary
 	font pango:M+ 2m medium, FontAwesome 5 Brands Regular, FontAwesome 5 Free Solid, FontAwesome 10
 	colors {
-		background $bg-color2
-		separator #C24600	
-		#                  border             background         text
-		active_workspace   $bg-color2	      $bg-color2	 $text-color
-		focused_workspace  $text-color        $bg-color2         $text-color
-		inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
-		urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
-		binding_mode	   $warning-bg-color  $warning-bg-color  $text-color
+		background $deepnightblue
+		separator $dark-orange	
+		#			border		background	text
+		active_workspace	$blue-gray	$darknightblue	$orange
+		focused_workspace	$orange		$darknightblue	$orange
+		inactive_workspace	$navy		$navy		$blue-gray
+		urgent_workspace	$darkaqua	$darkaqua	$orange
+		binding_mode		$darkred	$darkred	$orange
 	}
 }
 
@@ -249,23 +292,40 @@ bar {
 exec_always feh --bg-scale ~/Pictures/Wallpapers/188752.jpg 
 exec_always monset
 exec_always backlight
+exec --no-startup-id touchegg
 
 # Power settings
 exec --no-startup-id indicator-cpufreq
 exec --no-startup-id powertop --auto-tune
-exec --no-startup-id tlp start
 
 # Needed applet buttons
 exec --no-startup-id gnome-settings-daemon 
-exec --no-startup-id gnome-sound-applet
 exec --no-startup-id blueman-applet
 exec --no-startup-id nm-applet
 
 # Software on Startup
 exec --no-startup-id nextcloud
+exec --no-startup-id slack
+exec --no-startup-id zoom
+exec forticlientstart
+#exec forticlient
 
 
+# FOR Keyring and HiDPI
 # Add these lines to ~/.profile
-#exec_always eval $(gnome-keyring-daemon -d --start --components=pkcs11,secrets,ssh)
-#exec_always export SSH_AUTH_SOCK
+#eval $(gnome-keyring-daemon -d --start --components=pkcs11,secrets,ssh)
+#export SSH_AUTH_SOCK
+#
+#export GDK_SCALE=2
+#export GDK_DPI_SCALE=0.5
+#export QT_AUTO_SCREEN_SCALE_FACTOR=1
+
+
+# Add these lines to ~/.Xresources
+#Xft.antialias: true
+#Xft.hiting: true
+#Xft.rgba: rgba
+#Xft.hintstyle: hintfull
+#Xft.dpi:220
+#Xcursor.theme: Oxygen 02 Vibrant Orange
 

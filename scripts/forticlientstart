@@ -1,0 +1,2 @@
+echo 5356@192#Ok | sudo -S dpkg -i /home/tholian/build/FortiClientFullVPNInstaller_6.4.0.0851.deb
+
