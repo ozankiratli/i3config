@@ -1,5 +1,10 @@
 # i3config
+
+**This repo is now archived, since I switched to sway, I'm not using i3 anymore and will not be developing this repo anytime in the future.**
+
 In this repo, you'll find my settings, scripts and blocklets to control settings on my PC. 
+
+
 **OS:** Ubuntu 18.04 LTS
 
 Please note that, backlight and volume functions work best with the scripts that are in [ControlsFromTerminal](https://github.com/evolozzy/ControlsFromTerminal) repo. 
